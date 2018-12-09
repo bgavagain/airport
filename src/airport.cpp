@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <utility>
 
 using namespace std;
 
@@ -13,35 +14,55 @@ using namespace std;
 template <typename TAirport>
 class AirportCounter {
 public:
-  // конструктор по умолчанию: список элементов пока пуст
-  AirportCounter();
+  AirportCounter() {
+	  FillZero();
+  }
 
-  // конструктор от диапазона элементов типа TAirport
   template <typename TIterator>
-  AirportCounter(TIterator begin, TIterator end);
+  AirportCounter(TIterator begin, TIterator end) {
+	  FillZero();
+	  for(auto it = begin; it != end; it = next(it)) {
+		  ++data[static_cast<size_t>(*it)].second;
+	  }
+  }
 
   // получить количество элементов, равных данному
-  size_t Get(TAirport airport) const;
+  size_t Get(TAirport airport) const {
+	  return data[static_cast<size_t>(airport)].second;
+  }
 
-  // добавить данный элемент
-  void Insert(TAirport airport);
+  void Insert(TAirport airport) {
+	  ++data[static_cast<size_t>(airport)].second;
+  }
 
-  // удалить одно вхождение данного элемента
-  void EraseOne(TAirport airport);
+  void EraseOne(TAirport airport) {
+	  --data[static_cast<size_t>(airport)].second;
+  }
 
   // удалить все вхождения данного элемента
-  void EraseAll(TAirport airport);
+  void EraseAll(TAirport airport) {
+	  data[static_cast<size_t>(airport)].second = 0;
+  }
 
   using Item = pair<TAirport, size_t>;
-  using Items = /* ??? */;
+  using Items = array<Item, static_cast<size_t>(TAirport::Last_)>;
 
   // получить некоторый объект, по которому можно проитерироваться,
   // получив набор объектов типа Item - пар (аэропорт, количество),
   // упорядоченных по аэропорту
-  Items GetItems() const;
+  Items GetItems() const {
+	  return data;
+  }
 
 private:
-  // ???
+  void FillZero() {
+	  for(int i = 0; i < static_cast<size_t>(TAirport::Last_); ++i) {
+		  data[i].first = static_cast<TAirport>(i);
+		  data[i].second = 0;
+	  }
+  }
+
+  array<Item, static_cast<size_t>(TAirport::Last_)> data;
 };
 
 void TestMoscow() {
