@@ -16,38 +16,38 @@ template <typename TAirport>
 class AirportCounter {
 public:
   AirportCounter() {
-      FillZero();
+      data1.fill(0);
   }
 
   template <typename TIterator>
   inline AirportCounter(TIterator begin, TIterator end) {
-      FillZero();
-
+      data1.fill(0);
       for (TIterator it = begin; it != end; ++it) {
-          Insert(*it);
+          ++data1[static_cast<size_t>(*it)];
+          //++data[static_cast<size_t>(*it)].second;
 	  }
   }
 
   // получить количество элементов, равных данному
   size_t Get(TAirport airport) const {
-	  //return data1[static_cast<size_t>(airport)];
-	  return data[static_cast<size_t>(airport)].second;
+	  return data1[static_cast<size_t>(airport)];
+	  //return data[static_cast<size_t>(airport)].second;
   }
 
   void Insert(TAirport airport) {
-	  //++data1[static_cast<size_t>(airport)];
-	  ++data[static_cast<size_t>(airport)].second;
+	  ++data1[static_cast<size_t>(airport)];
+	  //++data[static_cast<size_t>(airport)].second;
   }
 
   void EraseOne(TAirport airport) {
-	  //--data1[static_cast<size_t>(airport)];
-	  --data[static_cast<size_t>(airport)].second;
+	  --data1[static_cast<size_t>(airport)];
+	  //--data[static_cast<size_t>(airport)].second;
   }
 
   // удалить все вхождения данного элемента
   void EraseAll(TAirport airport) {
-	  //data1[static_cast<size_t>(airport)] = 0;
-	  data[static_cast<size_t>(airport)].second = 0;
+	  data1[static_cast<size_t>(airport)] = 0;
+	  //data[static_cast<size_t>(airport)].second = 0;
   }
 
   using Item = pair<TAirport, size_t>;
@@ -56,20 +56,17 @@ public:
   // получить некоторый объект, по которому можно проитерироваться,
   // получив набор объектов типа Item - пар (аэропорт, количество),
   // упорядоченных по аэропорту
-  const Items& GetItems() const {
-      return data;
+  Items GetItems() const {
+      Items res;
+      for (int i = 0; i < static_cast<int>(TAirport::Last_); ++i)
+      {
+          res[i] = { static_cast<TAirport>(i), data1[i] };
+      }
+      return res;
   }
 
 private:
-  void FillZero() {
-      //data1.fill(0);
-
-      for(size_t i = 0; i < static_cast<int>(TAirport::Last_); ++i) {
-          data[i].first = static_cast<TAirport>(i);
-	  }
-  }
-
-  Items data;
+  array<size_t, static_cast<int>(TAirport::Last_)> data1;
 };
 
 
